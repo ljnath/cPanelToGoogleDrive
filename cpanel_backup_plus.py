@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2024 Lakhya Jyoti Nath (ljnath)
+Copyright (c) 2024-2025 Lakhya Jyoti Nath (ljnath)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 cPanelBackupPlus - Automated cPanel Full Backup to AmazonS3, Google Drive and more
-Version: 1.0
+Version: 1.1
 Author: Lakhya Jyoti Nath (ljnath)
 Email:  ljnath@ljnath.com
 Website: https://ljnath.com
@@ -158,6 +158,7 @@ class S3Handler(CloudStorageHandler):
         except Exception as e:
             self.logger.warning(f"Failed to upload file to S3, Error:{str(e)}")
 
+        self.logger.info(f'Upload status: {upload_status}')
         return upload_status
 
 
@@ -190,15 +191,24 @@ class GDriveHandler(CloudStorageHandler):
             if mime_type is None:
                 mime_type = 'application/octet-stream'
 
-            media = MediaFileUpload(filepath, mimetype=mime_type)
+            media = MediaFileUpload(filepath, mimetype=mime_type, resumable=True)
 
-            # upload the file
-            file = self.gdrive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-            self.logger.info(f'Successfully uploaded file to google drive, file ID: {file.get("id")}')
+            # Upload the file
+            request = self.gdrive_service.files().create(body=file_metadata, media_body=media, fields='id')
+
+            # Execute upload in chunks
+            response = None
+            while response is None:
+                status, response = request.next_chunk()
+                if status:
+                    self.logger.info(f"Uploaded {int(status.progress() * 100)}%.")
+
+            self.logger.info(f'Successfully uploaded file to google drive, file ID: {response.get("id")}')
             upload_status = True
         except Exception as e:
             self.logger.warning(f"Failed to upload file to google drive, Error: {str(e)}")
 
+        self.logger.info(f'Upload status: {upload_status}')
         return upload_status
 
     def purge(self) -> None:

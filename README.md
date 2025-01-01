@@ -1,7 +1,7 @@
 # cPanelBackupPlus
-### Version 1.0
+### Version 1.1
 Author : Lakhya Jyoti Nath (ljnath)<br>
-Date : August 2024<br>
+Date : August 2024 - January 2025<br>
 Email : ljnath@ljnath.com<br>
 Website : https://ljnath.com
 
@@ -56,4 +56,4 @@ Thanks in advance !
 
 ## License
 
-Copyright © 2024 [Lakhya's Innovation Inc.](https://ljnath.com) under the [MIT License](https://github.com/ljnath/cPanelBackupPlus/blob/master/LICENSE).
+Copyright © 2024-2025 [Lakhya's Innovation Inc.](https://ljnath.com) under the [MIT License](https://github.com/ljnath/cPanelBackupPlus/blob/master/LICENSE).
